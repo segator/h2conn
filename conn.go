@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 // Conn is client/server symmetric connection.
@@ -61,4 +62,16 @@ func (s *Conn) RemoteAddr() net.Addr {
 func (c *Conn) Close() error {
 	c.cancel()
 	return c.wc.Close()
+}
+
+func (c *Conn) SetDeadline(t time.Time) error {
+	return nil
+}
+
+func (c *Conn) SetReadDeadline(t time.Time) error {
+	return nil
+}
+
+func (c *Conn) SetWriteDeadline(t time.Time) error {
+	return nil
 }
