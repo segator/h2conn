@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/posener/h2conn/h2test"
+	"github.com/segator/h2conn/h2test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/nettest"

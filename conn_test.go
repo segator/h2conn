@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/posener/h2conn/h2test"
+	"github.com/segator/h2conn/h2test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/http2"
@@ -71,6 +71,9 @@ func TestConcurrent(t *testing.T) {
 	require.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	require.NotEmpty(t, clientConn.LocalAddr().String())
+	require.NotEmpty(t, clientConn.RemoteAddr().String())
 
 	buf := bufio.NewReader(clientConn)
 

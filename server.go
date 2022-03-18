@@ -3,6 +3,7 @@ package h2conn
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 )
 
@@ -16,6 +17,26 @@ var ErrHTTP2NotSupported = fmt.Errorf("HTTP2 not supported")
 type Server struct {
 	StatusCode int
 }
+type conAddr struct {
+	remoteAddr *net.TCPAddr
+	localAddr  *net.TCPAddr
+}
+
+func newConAddr(localAddr string, remoteAddr string) (*conAddr, error) {
+
+	remoteAddrTCP, err := net.ResolveTCPAddr("tcp", remoteAddr)
+	if err != nil {
+		return nil, err
+	}
+	localAddrTCP, err := net.ResolveTCPAddr("tcp", localAddr)
+	if err != nil {
+		return nil, err
+	}
+	return &conAddr{
+		remoteAddr: remoteAddrTCP,
+		localAddr:  localAddrTCP,
+	}, nil
+}
 
 // Accept is used on a server http.Handler to extract a full-duplex communication object with the client.
 // See h2conn.Accept documentation for more info.
@@ -27,8 +48,12 @@ func (u *Server) Accept(w http.ResponseWriter, r *http.Request) (*Conn, error) {
 	if !ok {
 		return nil, ErrHTTP2NotSupported
 	}
+	addrs, err := newConAddr(r.RemoteAddr, r.Host)
+	if err != nil {
+		return nil, err
+	}
 
-	c, ctx := newConn(r.Context(), r.Body, &flushWrite{w: w, f: flusher})
+	c, ctx := newConn(r.Context(), addrs, r.Body, &flushWrite{w: w, f: flusher})
 
 	// Update the request context with the connection context.
 	// If the connection is closed by the server, it will also notify everything that waits on the request context.
