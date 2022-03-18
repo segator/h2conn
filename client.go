@@ -50,7 +50,8 @@ func (c *Client) Connect(ctx context.Context, urlStr string) (*Conn, *http.Respo
 	if err != nil {
 		return nil, nil, err
 	}
-	addr, err := newConAddr(req.RemoteAddr, req.Host)
+
+	addr, err := newConAddr(req.Host, req.Host)
 	if err != nil {
 		return nil, nil, err
 	}
